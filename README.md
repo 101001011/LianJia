@@ -35,7 +35,8 @@
 ## 其它信息
 
 - $\rm Author: CCA$
-- $\rm Contact~Method:$ `c-c-a@qq.com`
+- $\rm Contact\ Method:$ `c-c-a@qq.com`
 - $\rm Date: 2024/6/12$
-- $\rm Open~Source~License: GPL$
+- $\rm Open\ Source\ License: GPL$
 - $\rm Version: v3.2$
+
