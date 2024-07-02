@@ -7,9 +7,9 @@
 ## 使用方法
 
 1. 运行 `main.py` 或 `LianJia Spider.exe`. (运行 `LianJia Spider.exe` 时请将其置于 `src` 目录下, 即与 `main.py` 放在一起)
-2. 输入城市(中文名称).
-3. 输入两个以空格分隔的正整数 $l, r(1 \leqslant l \leqslant r \leqslant 100)$, 表示爬取链家上该城市从第 $l$ 页到第 $r$ 页的所有在售二手房信息.
-4. 稍事等待, 信息会自动存入 `result/information` 文件夹中的 `城市名_l-r.json` 和 `城市名_l-r.csv` 文件. 图片文件会被存入 `result/image` 文件夹.
+2. 输入城市名(中文名称).
+3. 输入需爬取的页数范围 $l, r(1 \leqslant l \leqslant r \leqslant 100)$, 表示爬取链家上该城市从第 $l$ 页到第 $r$ 页的所有在售二手房信息.
+4. 稍事等待, 数据会自动存入 `result/information` 文件夹中的 `城市名_l-r.json` 和 `城市名_l-r.csv` 文件. 图片文件会被存入 `result/image` 文件夹.
 
 ## 参数解释
 
@@ -32,4 +32,4 @@
 - $\rm Contact\ Method:$ `c-c-a@qq.com`
 - $\rm Date: 2024/7/2$
 - $\rm Open\ Source\ License: GPL$
-- $\rm Version: 4.1.0$
+- $\rm Version: 4.2.2$

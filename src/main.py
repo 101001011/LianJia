@@ -11,6 +11,8 @@ with open('../data/USER_AGENTS.json', 'r', encoding='UTF-8') as file:
     USER_AGENTS = json.load(file)
 with open('../data/CITY_CODE.json', 'r', encoding='UTF-8') as file:
     CITY_CODE = json.load(file)
+IMAGE_PATH = os.path.join('..', 'result', 'image')
+INFORMATION_PATH = os.path.join('..', 'result', 'information')
 
 def get_html(url: str, headers: dict) -> str:
     """网络请求, 获取页面 html 代码"""
@@ -126,40 +128,20 @@ def local_image(url: str) -> str:
         time.sleep(random.random())
         return local_image(url)
 
-if __name__ == '__main__':
-    # 获取爬取范围
-    city_chinese = input('请输入城市:')
-    if city_chinese not in CITY_CODE:
-        print('链家暂未提供该城市相关信息.')
-        exit(0)
-    city = CITY_CODE[city_chinese]
-    left, right = map(int, input('请输入页数范围:').split())
-    
-    infos = []
-    for page in range(left, right + 1):
-        # 设定页面 url 和请求 headers
-        url = f'https://{city}.lianjia.com/ershoufang/pg{page}/'
-        headers = {
-            'User-Agent': random.choice(USER_AGENTS),
-            'Referer': f'https://{city}.lianjia.com/ershoufang/pg{page}/'
-        }
-        # 不断发起请求, 直到解析成功
-        # 因为链家正常来说会返回 html, 但小概率会返回 JavaScript
-        info = None
-        while not info:
-            html_code = get_html(url, headers)
-            info = extract(html_code)
-        infos.extend(info)
-        print(f'page {page} completed.')
-
+def save_result():
+    """保存爬取到的数据"""
     print('Saving images...')
-    os.startfile(os.path.join('..', 'result', 'image'))
+    if not os.path.exists(IMAGE_PATH):
+        os.makedirs(IMAGE_PATH)
+    os.startfile(IMAGE_PATH)
     for info in infos:
         info['image'] = local_image(info['image'])
 
     # 将数据写入到 json 文件
     print('Saving to json...')
-    with open(f'../result/information/{city_chinese}_{left}-{right}.json', 'w', encoding='utf-8') as file:
+    if not os.path.exists(INFORMATION_PATH):
+        os.makedirs(INFORMATION_PATH)
+    with open(f'{INFORMATION_PATH}/{city_chinese}_{left}-{right}.json', 'w', encoding='utf-8') as file:
         json.dump(fp=file, obj=infos, ensure_ascii=False, indent=4)
     
     # 将数据写入到 csv 文件
@@ -187,6 +169,42 @@ if __name__ == '__main__':
         table.append(line)
 
     table[0] = ['标题', '地址', '户型', '面积', '朝向', '装修情况', '层数', '建造时间', '楼型', '总价', '每平米单价', '图片', '详情链接']
-    with open(f'../result/information/{city_chinese}_{left}-{right}.csv', 'w', encoding='GBK') as file:
+    with open(f'{INFORMATION_PATH}/{city_chinese}_{left}-{right}.csv', 'w', encoding='GBK') as file:
         writer = csv.writer(file)
         writer.writerows(table)
+
+if __name__ == '__main__':
+    # 获取爬取范围
+    city_chinese = input('请输入城市:')
+    if city_chinese not in CITY_CODE:
+        print('链家暂未提供该城市相关信息.')
+        exit(0)
+    city = CITY_CODE[city_chinese]
+    match = re.search(r'^\D*(\d+)\D+(\d+)\D*$', input('请输入页数范围:'))
+    if match:
+        left, right = map(int, match.groups())
+        if left < 1 or left > right or right > 100:
+            print('页数范围不合法')
+            exit(0)
+    else:
+        print('输入格式不合法')
+        exit(0)
+
+    infos = []
+    for page in range(left, right + 1):
+        # 设定页面 url 和请求 headers
+        url = f'https://{city}.lianjia.com/ershoufang/pg{page}/'
+        headers = {
+            'User-Agent': random.choice(USER_AGENTS),
+            'Referer': f'https://{city}.lianjia.com/ershoufang/pg{page}/'
+        }
+        # 不断发起请求, 直到解析成功
+        # 因为链家正常来说会返回 html, 但小概率会返回 JavaScript
+        info = None
+        while not info:
+            html_code = get_html(url, headers)
+            info = extract(html_code)
+        infos.extend(info)
+        print(f'page {page} completed.')
+
+    save_result()
